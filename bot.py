@@ -85,6 +85,7 @@ async def build(ctx, *args):
                     game = discord.Game("!op help")
                     await bot.change_presence(status = discord.Status.online, activity = game)
                     return
+
                 rune_img = makeImage(runes)
                 data = get_build(args[0], args[1])
                 build = ''
@@ -93,7 +94,7 @@ async def build(ctx, *args):
                 await ctx.send(f'Champ: {args[1].capitalize()}')
 
                 text_time = time.time()
-                data = dict(data.get())
+                data = dict(data)
                 for num in range(1, len(data) - 4):
                     build += f'Build {num}: '
                     for item in data[f'build_{num}']:
@@ -106,7 +107,7 @@ async def build(ctx, *args):
                 # send runes
                 image_time = time.time()
                 with io.BytesIO() as image_binary:
-                    rune_img.get().save(image_binary, 'PNG')
+                    rune_img.save(image_binary, 'PNG')
                     image_binary.seek(0)
                     await ctx.send(
                         file=discord.File(

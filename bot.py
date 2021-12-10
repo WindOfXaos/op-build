@@ -119,7 +119,7 @@ async def build(ctx, *args):
                 game = discord.Game("!op help")
                 await bot.change_presence(status = discord.Status.online, activity = game)
             else:
-                await ctx.send('Check Spelling u idiot')
+                await ctx.send('Don\'t worry, Riot will release ' + args[1].capitalize() + ' soon!')
 
 bot.remove_command('help')
 @bot.command()

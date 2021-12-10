@@ -85,8 +85,8 @@ async def build(ctx, *args):
                     game = discord.Game("!op help")
                     await bot.change_presence(status = discord.Status.online, activity = game)
                     return
-                rune_img = pool.apply_async(makeImage, (runes, ))
-                data = pool.apply_async(get_build, (args[0], args[1]))
+                rune_img = makeImage(runes)
+                data = get_build(args[0], args[1])
                 build = ''
 
                 await ctx.send(f'Lane: {args[0].capitalize()}')

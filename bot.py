@@ -65,7 +65,7 @@ async def build(ctx, *args):
     if len(args) != 2:
         await ctx.send('Usage: !op build [lane] [champion]')
     elif args[0] not in ['top', 'mid', 'jungle', 'adc', 'support']:
-        await ctx.send('Sorry but league has only 5 lanes!')
+        await ctx.send('Sorry, can\'t recognise this lane :confused:')
     else:
         async with ctx.typing():
             URL = "https://euw.op.gg/champion/" + args[1] + "/statistics/" + args[0]
@@ -120,7 +120,7 @@ async def build(ctx, *args):
                 game = discord.Game("!op help")
                 await bot.change_presence(status = discord.Status.online, activity = game)
             else:
-                await ctx.send('Don\'t worry, Riot will release ' + args[1].capitalize() + ' soon!')
+                await ctx.send('Don\'t worry, Riot will release ' + args[1].capitalize() + ' soon :grin:')
 
 bot.remove_command('help')
 @bot.command()

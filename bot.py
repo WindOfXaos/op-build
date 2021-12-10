@@ -95,7 +95,8 @@ async def build(ctx, *args):
 
                 text_time = time.time()
                 data = dict(data)
-                for num in range(1, len(data) - 4):
+                # for num in range(1, len(data) - 4):
+                for num in range(len(data) - 1):
                     build += f'Build {num}: '
                     for item in data[f'build_{num}']:
                         build += (item.lstrip("(\"\'")) + ', '

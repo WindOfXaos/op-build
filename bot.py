@@ -1,9 +1,8 @@
-import json
+import multiprocessing
 import re
 import io
 import time
 from multiprocessing.pool import ThreadPool
-from discord import activity
 from urllib import request
 
 import discord
@@ -61,6 +60,7 @@ async def opgg(ctx, *args):
 
 @bot.command()
 async def build(ctx, *args):
+    prep_time = time.time()
     print('Build cmd detected')
     if len(args) != 2:
         await ctx.send('Usage: !op build [lane] [champion]')
@@ -76,36 +76,41 @@ async def build(ctx, *args):
 
                 game = discord.Game("Looking for an op build...")
                 await bot.change_presence(status = discord.Status.do_not_disturb, activity = game)
-                prev_time = time.time()
+                await ctx.send(f"Prep time took {time.time() - prep_time} seconds")
 
-                pool = ThreadPool(processes = 30)
+                empcheck_time = time.time()
                 runes = get_runes(args[0], args[1])
                 if (len(runes) == 0):
                     await ctx.send('No builds found :(')
                     game = discord.Game("!op help")
                     await bot.change_presence(status = discord.Status.online, activity = game)
                     return
+                await ctx.send(f"Empty check time took {time.time() - empcheck_time} seconds")
 
-                rune_img = makeImage(runes)
-                data = get_build(args[0], args[1])
-                build = ''
+                fetch_time = time.time()
+                p1 = ThreadPool(processes = 4).apply_async(makeImage, (runes, ))
+                p2 = ThreadPool(processes = 4).apply_async(get_build, (args[0], args[1]))
+                rune_img = p1.get()
+                data = p2.get()
+                # rune_img = makeImage(runes)
+                # data = get_build(args[0], args[1])
 
                 await ctx.send(f'Lane: {args[0].capitalize()}')
                 await ctx.send(f'Champ: {args[1].capitalize()}')
+                await ctx.send(f"Fetch time took {time.time() - fetch_time} seconds")
 
-                text_time = time.time()
-                data = dict(data)
-                for num in range(1, len(data) - 4):
-                    build += f'Build {num}: '
-                    for item in data[f'build_{num}']:
-                        build += (item.lstrip("(\"\'")) + ', '
-                    build += '\n'
-                    build = re.sub(r'(,)[\s]$', '', build)
-                await ctx.send(build)
-                await ctx.send(f"Build text took {time.time() - text_time} seconds")
+                send_time = time.time()
+                builds = data['builds']
+                send = ''
+                for num in range(len(builds)):
+                    send += f'Build {num + 1}: '
+                    for item in builds[num]:
+                        send += item[0] + ', '
+                    send += '\n'
+                    send = re.sub(r'(,)[\s]$', '', send)
+                await ctx.send(send)
 
                 # send runes
-                image_time = time.time()
                 with io.BytesIO() as image_binary:
                     rune_img.save(image_binary, 'PNG')
                     image_binary.seek(0)
@@ -115,7 +120,7 @@ async def build(ctx, *args):
                             filename=f'{args[1]} runes.png'
                         )
                     )
-                await ctx.send(f"Build image took {time.time() - image_time} seconds")
+                await ctx.send(f"Send time took {time.time() - send_time} seconds")
 
                 game = discord.Game("!op help")
                 await bot.change_presence(status = discord.Status.online, activity = game)

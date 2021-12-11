@@ -8,7 +8,6 @@ import os
 import discord
 from discord.ext import commands
 
-from secret.secret_token import token_class
 from build import get_build
 from rune_image import makeImage
 from runes import get_runes

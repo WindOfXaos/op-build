@@ -3,6 +3,7 @@ import io
 import time
 from multiprocessing.pool import ThreadPool
 from urllib import request
+import os
 
 import discord
 from discord.ext import commands
@@ -146,4 +147,4 @@ async def help(ctx):
         )
         await ctx.send(embed=embed)
 
-bot.run(token_class().get_token())
+bot.run(os.getenv("DISCORD_TOKEN"))
